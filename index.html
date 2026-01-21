@@ -28,7 +28,7 @@
       </header>
 
       <main class="panel">
-        <section class="card" id="register-card">
+        <section class="card hidden" id="register-card">
           <h2>Create your JoRizz account</h2>
           <form id="register-form" novalidate>
             <label>
@@ -53,6 +53,9 @@
               />
             </label>
             <button type="submit">Register</button>
+            <button class="link-button" type="button" id="show-login">
+              Already have an account? Log in
+            </button>
             <p class="feedback" id="register-feedback" role="status"></p>
           </form>
         </section>
@@ -74,6 +77,9 @@
               />
             </label>
             <button type="submit">Log In</button>
+            <button class="link-button" type="button" id="show-register">
+              New here? Create an account
+            </button>
             <button class="link-button" type="button" id="forgot-password">
               Forgot password?
             </button>
@@ -164,6 +170,8 @@
 
       const forgotPasswordButton = document.querySelector("#forgot-password");
       const backToLoginButton = document.querySelector("#back-to-login");
+      const showRegisterButton = document.querySelector("#show-register");
+      const showLoginButton = document.querySelector("#show-login");
 
       const registerCard = document.querySelector("#register-card");
       const loginCard = document.querySelector("#login-card");
@@ -275,6 +283,16 @@
         setFeedback(loginFeedback, "");
       });
 
+      showRegisterButton.addEventListener("click", () => {
+        showCard(registerCard);
+        setFeedback(registerFeedback, "");
+      });
+
+      showLoginButton.addEventListener("click", () => {
+        showCard(loginCard);
+        setFeedback(loginFeedback, "");
+      });
+
       resetForm.addEventListener("submit", (event) => {
         event.preventDefault();
         const formData = new FormData(resetForm);
@@ -305,6 +323,7 @@
       });
 
       const existingUser = getStoredUser();
+      showCard(loginCard);
       if (existingUser) {
         setFeedback(
           registerFeedback,
