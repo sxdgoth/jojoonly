@@ -38,7 +38,7 @@ body {
 
 .brand h1 {
   font-size: clamp(2.3rem, 3vw, 3rem);
-  margin: 6px 0 0;
+  margin: 0;
 }
 
 .eyebrow {
@@ -157,15 +157,35 @@ button:hover {
   gap: 12px;
 }
 
+.balances {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: #cbd5f5;
+}
+
 .home-actions {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .ghost {
   background: transparent;
   border: 1px solid #334155;
   color: #e2e8f0;
+}
+
+.ghost.danger {
+  border-color: #ef4444;
+  color: #fecaca;
+}
+
+.ghost.selected {
+  border-color: #38bdf8;
+  color: #38bdf8;
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
 }
 
 .avatar {
@@ -184,6 +204,37 @@ button:hover {
 .status {
   color: #94a3b8;
   margin: 0;
+}
+
+.user-file {
+  background: #0f172a;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.user-file pre {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #e2e8f0;
+  white-space: pre-wrap;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.muted {
+  margin: 0;
+  color: #94a3b8;
+}
+
+.outfits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 @media (max-width: 720px) {
