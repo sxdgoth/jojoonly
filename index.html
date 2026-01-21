@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>JoRizz Portal</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="brand">
+        <div>
+          <p class="eyebrow">Welcome to</p>
+          <h1>JoRizz</h1>
+          <p class="subhead">
+            Register, log in, and explore your avatar before heading to the
+            hosting portal.
+          </p>
+        </div>
+        <a
+          class="portal-link"
+          href="https://ifastnet.com/portal/index.php?rp=/store/premium-web-hosting-cpanel"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Visit Hosting Portal
+        </a>
+      </header>
+
+      <main class="panel">
+        <section class="card" id="register-card">
+          <h2>Create your JoRizz account</h2>
+          <form id="register-form" novalidate>
+            <label>
+              Username
+              <input type="text" name="username" autocomplete="username" required />
+            </label>
+            <label>
+              Email
+              <input type="email" name="email" autocomplete="email" required />
+            </label>
+            <label>
+              Password
+              <input type="password" name="password" autocomplete="new-password" required />
+            </label>
+            <label>
+              Confirm password
+              <input
+                type="password"
+                name="confirmPassword"
+                autocomplete="new-password"
+                required
+              />
+            </label>
+            <button type="submit">Register</button>
+            <p class="feedback" id="register-feedback" role="status"></p>
+          </form>
+        </section>
+
+        <section class="card" id="login-card">
+          <h2>Log in with your JoRizz details</h2>
+          <form id="login-form" novalidate>
+            <label>
+              Username
+              <input type="text" name="username" autocomplete="username" required />
+            </label>
+            <label>
+              Password
+              <input
+                type="password"
+                name="password"
+                autocomplete="current-password"
+                required
+              />
+            </label>
+            <button type="submit">Log In</button>
+            <button class="link-button" type="button" id="forgot-password">
+              Forgot password?
+            </button>
+            <p class="feedback" id="login-feedback" role="status"></p>
+          </form>
+        </section>
+
+        <section class="card hidden" id="reset-card">
+          <h2>Reset your password</h2>
+          <p>
+            We will send a reset message to the email you registered with. Make
+            sure it matches the email on file.
+          </p>
+          <form id="reset-form" novalidate>
+            <label>
+              Email
+              <input type="email" name="email" autocomplete="email" required />
+            </label>
+            <button type="submit">Send reset email</button>
+            <button class="link-button" type="button" id="back-to-login">
+              Back to login
+            </button>
+            <p class="feedback" id="reset-feedback" role="status"></p>
+          </form>
+        </section>
+
+        <section class="card hidden" id="home-card">
+          <div class="home-header">
+            <div>
+              <p class="eyebrow">JoRizz Avatar</p>
+              <h2>Welcome back, <span id="profile-name">Creator</span></h2>
+            </div>
+            <div class="home-actions">
+              <button class="ghost">Shop</button>
+              <button class="ghost">Wardrobe</button>
+            </div>
+          </div>
+
+          <div class="avatar">
+            <svg
+              viewBox="0 0 320 320"
+              role="img"
+              aria-labelledby="avatar-title"
+            >
+              <title id="avatar-title">JoRizz avatar template</title>
+              <defs>
+                <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#ffe0bd" />
+                  <stop offset="100%" stop-color="#ffcf9c" />
+                </linearGradient>
+                <linearGradient id="hair" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#1f2933" />
+                  <stop offset="100%" stop-color="#0f1720" />
+                </linearGradient>
+              </defs>
+              <rect width="320" height="320" rx="32" fill="#0b1224" />
+              <circle cx="160" cy="148" r="70" fill="url(#skin)" />
+              <path
+                d="M95 130c15-45 115-45 130 0-10-30-5-65-65-65s-55 35-65 65z"
+                fill="url(#hair)"
+              />
+              <circle cx="135" cy="150" r="8" fill="#1b1b1b" />
+              <circle cx="185" cy="150" r="8" fill="#1b1b1b" />
+              <path
+                d="M140 180c10 10 30 10 40 0"
+                stroke="#7f4a2f"
+                stroke-width="6"
+                fill="none"
+                stroke-linecap="round"
+              />
+              <rect x="110" y="220" width="100" height="60" rx="24" fill="#222" />
+              <rect x="122" y="232" width="76" height="36" rx="18" fill="#374151" />
+            </svg>
+          </div>
+          <p class="status" id="session-status"></p>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const registerForm = document.querySelector("#register-form");
+      const loginForm = document.querySelector("#login-form");
+      const resetForm = document.querySelector("#reset-form");
+
+      const registerFeedback = document.querySelector("#register-feedback");
+      const loginFeedback = document.querySelector("#login-feedback");
+      const resetFeedback = document.querySelector("#reset-feedback");
+
+      const forgotPasswordButton = document.querySelector("#forgot-password");
+      const backToLoginButton = document.querySelector("#back-to-login");
+
+      const registerCard = document.querySelector("#register-card");
+      const loginCard = document.querySelector("#login-card");
+      const resetCard = document.querySelector("#reset-card");
+      const homeCard = document.querySelector("#home-card");
+      const profileName = document.querySelector("#profile-name");
+      const sessionStatus = document.querySelector("#session-status");
+
+      const storageKey = "jorizz-user";
+
+      const getStoredUser = () => {
+        const raw = localStorage.getItem(storageKey);
+        if (!raw) {
+          return null;
+        }
+
+        try {
+          return JSON.parse(raw);
+        } catch (error) {
+          localStorage.removeItem(storageKey);
+          return null;
+        }
+      };
+
+      const setFeedback = (element, message, isSuccess = false) => {
+        element.textContent = message;
+        element.classList.toggle("success", isSuccess);
+      };
+
+      const showCard = (target) => {
+        [registerCard, loginCard, resetCard, homeCard].forEach((card) => {
+          card.classList.toggle("hidden", card !== target);
+        });
+      };
+
+      const showHome = (user) => {
+        profileName.textContent = user.username;
+        sessionStatus.textContent = `Signed in as ${user.username} · ${user.email}`;
+        showCard(homeCard);
+      };
+
+      registerForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(registerForm);
+        const username = formData.get("username").trim();
+        const email = formData.get("email").trim();
+        const password = formData.get("password");
+        const confirmPassword = formData.get("confirmPassword");
+
+        if (!username || !email || !password || !confirmPassword) {
+          setFeedback(registerFeedback, "All fields are required.");
+          return;
+        }
+
+        if (password.length < 6) {
+          setFeedback(registerFeedback, "Password must be at least 6 characters.");
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          setFeedback(registerFeedback, "Passwords do not match.");
+          return;
+        }
+
+        const user = { username, email, password };
+        localStorage.setItem(storageKey, JSON.stringify(user));
+        setFeedback(
+          registerFeedback,
+          "Registration complete. You can log in with your username and password.",
+          true
+        );
+        registerForm.reset();
+      });
+
+      loginForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(loginForm);
+        const username = formData.get("username").trim();
+        const password = formData.get("password");
+        const storedUser = getStoredUser();
+
+        if (!storedUser) {
+          setFeedback(loginFeedback, "No account found. Please register first.");
+          return;
+        }
+
+        if (!username || !password) {
+          setFeedback(loginFeedback, "Enter your username and password.");
+          return;
+        }
+
+        if (storedUser.username !== username || storedUser.password !== password) {
+          setFeedback(loginFeedback, "Incorrect username or password.");
+          return;
+        }
+
+        setFeedback(loginFeedback, "Login successful.", true);
+        loginForm.reset();
+        showHome(storedUser);
+      });
+
+      forgotPasswordButton.addEventListener("click", () => {
+        showCard(resetCard);
+        setFeedback(resetFeedback, "");
+      });
+
+      backToLoginButton.addEventListener("click", () => {
+        showCard(loginCard);
+        setFeedback(loginFeedback, "");
+      });
+
+      resetForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(resetForm);
+        const email = formData.get("email").trim();
+        const storedUser = getStoredUser();
+
+        if (!storedUser) {
+          setFeedback(resetFeedback, "No account on file. Please register first.");
+          return;
+        }
+
+        if (!email) {
+          setFeedback(resetFeedback, "Enter your registered email.");
+          return;
+        }
+
+        if (storedUser.email !== email) {
+          setFeedback(resetFeedback, "Email not recognized. Please try again.");
+          return;
+        }
+
+        setFeedback(
+          resetFeedback,
+          "Reset email request prepared. You'll receive it once email sending is wired up.",
+          true
+        );
+        resetForm.reset();
+      });
+
+      const existingUser = getStoredUser();
+      if (existingUser) {
+        setFeedback(
+          registerFeedback,
+          "Existing account detected. Log in to continue.",
+          true
+        );
+      }
+    </script>
+  </body>
+</html>
